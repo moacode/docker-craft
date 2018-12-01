@@ -1,4 +1,4 @@
-FROM php:7.1-fpm-alpine3.8
+FROM php:7.2-fpm-alpine3.8
 
 ARG UID
 ARG GID
@@ -40,7 +40,7 @@ USER plato
 # COPY ./container/templates /var/www/html/templates
 # COPY ./container/web /var/www/html/web
 COPY ./container/composer.json /var/www/html/composer.json
-# COPY ./container/craft /var/www/html/craft
+COPY ./container/craft /var/www/html/craft
 
 RUN mkdir -p /var/www/html/storage/rebrand && \
     mkdir -p /var/www/html/storage/runtime/mutex && \

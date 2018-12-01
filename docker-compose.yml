@@ -17,6 +17,7 @@ services:
       - ./container/modules:/var/www/html/modules
       - ./container/web:/var/www/html/web
       - ./container/composer.json:/var/www/html/composer.json
+      - ./container/.env:/var/www/html/.env
 
   apache:
     build: 
@@ -24,7 +25,7 @@ services:
       dockerfile: './.docker/apache/Dockerfile'
     depends_on:
       - php
-      - database
+      - db
     networks:
       - frontend
       - backend
@@ -39,7 +40,7 @@ services:
   #       dockerfile: ./.docker/nginx/Dockerfile
   #     depends_on:
   #       - php
-  #       - database
+  #       - db
   #     networks:
   #       - frontend
   #       - backend
@@ -60,30 +61,30 @@ services:
   #     - MYSQL_USER=craft
   #     - MYSQL_PASSWORD=craftcms
   #   volumes:
-  #     - database:/var/lib/mysql
+  #     - db:/var/lib/mysql
 
-  database:
+  db:
     image: mariadb:10.3
     volumes:
-      - database:/var/lib/database
+      - db:/var/lib/db
     networks:
       - backend
     ports:
       - 33060:3306
     environment:
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: project
-      MYSQL_USER: project
-      MYSQL_PASSWORD: project
+      MYSQL_ROOT_PASSWORD: y=cpz9hvk.dYCdmHu+(zM9t6
+      MYSQL_DATABASE: craft
+      MYSQL_USER: craft
+      MYSQL_PASSWORD: craft
 
   # phpmyadmin:
   #   image: phpmyadmin/phpmyadmin
   #   depends_on :
-  #      - database
+  #      - db
   #   networks: 
   #     - backend
   #   external_links:
-  #     - database:db
+  #     - db:db
   #   ports:
   #     - 8181:80
   #   environment:
@@ -95,4 +96,4 @@ networks:
   backend:
 
 volumes:
-  database:
+  db:
