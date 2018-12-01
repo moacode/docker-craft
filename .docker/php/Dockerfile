@@ -54,10 +54,6 @@ RUN chown plato:staff /var/www/html/
 USER plato
 
 # Copy composer.json file, required for composer install
-# COPY ./container/config /var/www/html/config
-# COPY ./container/modules /var/www/html/modules
-# COPY ./container/templates /var/www/html/templates
-# COPY ./container/web /var/www/html/web
 COPY ./container/composer.json /var/www/html/composer.json
 COPY ./container/craft /var/www/html/craft
 
