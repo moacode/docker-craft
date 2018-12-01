@@ -15,8 +15,8 @@ services:
       - ./container/templates:/var/www/html/templates
       - ./container/modules:/var/www/html/modules
       - ./container/web:/var/www/html/web
-      - ./container/composer.json:/var/www/html/composer.json
       - ./container/.env:/var/www/html/.env
+      - vendor:/var/www/html/vendor # Shared with the composer service. Built packages will be mounted here.
 
   webserver:
     build: 
@@ -64,9 +64,41 @@ services:
       MYSQL_USERNAME: root
       MYSQL_ROOT_PASSWORD: rootpassword
 
+  composer:
+    build: 
+      context: .
+      dockerfile: './.docker/composer/Dockerfile'
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    volumes:
+      - ./container/composer.json:/app/composer.json # Mount the hosts composer JSON file in this container.
+      - ./container/composer.lock:/app/composer.lock
+      - vendor:/app/vendor # Named VOLUME shared with the php service for installed composer packages.
+    command: "composer install"
+
+  node:
+    build: 
+      context: .
+      dockerfile: './.docker/node/Dockerfile'
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    volumes:
+      - ./container/package.json:/app/package.json
+      - ./container/mix-manifest.json:/app/mix-manifest.json
+      - ./container/web/mix-manifest.json:/app/public/mix-manifest.json
+      - ./container/webpack.mix.js:/app/webpack.mix.js
+      - ./container/yarn.lock:/app/yarn.lock
+      - ./container/web/js:/app/public/js
+      - ./container/web/css:/app/public/css
+      - ./container/web/scss:/app/public/scss
+    command: "yarn watch"
+
 networks:
   frontend:
   backend:
 
 volumes:
   database:
+  vendor:

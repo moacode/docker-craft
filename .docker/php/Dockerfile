@@ -53,17 +53,10 @@ RUN chown plato:staff /var/www/html/
 
 USER plato
 
-# Copy composer.json file, required for composer install
-COPY ./container/composer.json /var/www/html/composer.json
 COPY ./container/craft /var/www/html/craft
 
 RUN mkdir -p /var/www/html/storage/rebrand && \
     mkdir -p /var/www/html/storage/runtime/mutex && \
     mkdir -p /var/www/html/storage/logs
-
-# Installs a parallel processing plugin to improve composer performance,
-# then we run composer install. We can probably remove this into a build container in the future.
-RUN composer global require hirak/prestissimo
-RUN composer install -d /var/www/html/
 
 WORKDIR /var/www/html/
