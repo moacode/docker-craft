@@ -44,6 +44,7 @@ services:
     env_file:
       './.docker/mariadb/.env'
     volumes:
+      - ./.docker/mariadb/seed:/docker-entrypoint-initdb.d:ro
       - database:/var/lib/mysql
     networks:
       - backend
