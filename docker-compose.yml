@@ -1,0 +1,98 @@
+version: "3.2"
+
+services:
+  
+  php:
+    build: 
+      context: .
+      dockerfile: './.docker/php/Dockerfile' 
+      args:
+        UID: ${UID}
+        GID: ${GID}
+    networks:
+      - backend
+    volumes:
+      - ./container/config:/var/www/html/config
+      - ./container/templates:/var/www/html/templates
+      - ./container/modules:/var/www/html/modules
+      - ./container/web:/var/www/html/web
+      - ./container/composer.json:/var/www/html/composer.json
+
+  apache:
+    build: 
+      context: .
+      dockerfile: './.docker/apache/Dockerfile'
+    depends_on:
+      - php
+      - database
+    networks:
+      - frontend
+      - backend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./container/web:/var/www/html/web
+
+  # nginx:
+  #     build:
+  #       context: .
+  #       dockerfile: ./.docker/nginx/Dockerfile
+  #     depends_on:
+  #       - php
+  #       - database
+  #     networks:
+  #       - frontend
+  #       - backend
+  #     ports:
+  #       - 8080:80
+  #     volumes:
+  #       - ./container/web:/var/www/html/web
+
+  # mysql:
+  #   image: mysql:5.7
+  #   command: --default-authentication-plugin=mysql_native_password
+  #   restart: always
+  #   networks:
+  #     - backend
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=rootpassword
+  #     - MYSQL_DATABASE=craftcms
+  #     - MYSQL_USER=craft
+  #     - MYSQL_PASSWORD=craftcms
+  #   volumes:
+  #     - database:/var/lib/mysql
+
+  database:
+    image: mariadb:10.3
+    volumes:
+      - database:/var/lib/database
+    networks:
+      - backend
+    ports:
+      - 33060:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: project
+      MYSQL_USER: project
+      MYSQL_PASSWORD: project
+
+  # phpmyadmin:
+  #   image: phpmyadmin/phpmyadmin
+  #   depends_on :
+  #      - database
+  #   networks: 
+  #     - backend
+  #   external_links:
+  #     - database:db
+  #   ports:
+  #     - 8181:80
+  #   environment:
+  #     MYSQL_USERNAME: root
+  #     MYSQL_ROOT_PASSWORD: rootpassword
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  database:
