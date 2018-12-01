@@ -7,15 +7,34 @@ USER root
 
 COPY ./.docker/php/custom.ini /usr/local/etc/php/conf.d/custom.ini
 
-# imagemagick, mysqli, pdo_mysql & zip
-RUN apk add --update --no-cache autoconf composer g++ imagemagick-dev icu-dev php7-intl libtool libzip-dev make pcre-dev zip \
-	&& docker-php-ext-install mysqli pdo_mysql \
-	&& docker-php-ext-configure intl && docker-php-ext-install intl \
-	&& docker-php-ext-configure zip --with-libzip && docker-php-ext-install zip \
+# Installs required libraries for the PHP environment.
+# As the Alpine Distro is barebones, we need to install compiling tools first. These are removed at the end to keep the build size down.
+# We require imagemagick and imagemagick-dev, otherwise the delegates for jpeg and png cannot be found.
+# https://github.com/docker-library/php/issues/105#issuecomment-278114879
+RUN apk add --update --no-cache \
+  autoconf \
+  g++\
+  icu-dev\
+  make\
+  pcre-dev \
+  composer\
+  php7-intl\
+  libtool\
+  libzip-dev\
+  zip \
+  libpng\
+  libjpeg-turbo\
+  imagemagick\
+  imagemagick-dev \
+  && export CFLAGS="$PHP_CFLAGS" CPPFLAGS="$PHP_CPPFLAGS" LDFLAGS="$PHP_LDFLAGS" \
+  && docker-php-ext-configure intl \
+  && docker-php-ext-configure zip --with-libzip \
+  && docker-php-ext-install bcmath mysqli pdo_mysql intl zip \
 	&& pecl install imagick \
 	&& docker-php-ext-enable imagick \
 	&& apk del autoconf g++ icu-dev libtool make pcre-dev
 
+# Creates a new user `plato` and group `staff`, which matches the UID and GID of the host environment.
 RUN apk add --no-cache shadow sudo && \
     if [ -z "`getent group $GID`" ]; then \
       addgroup -S -g $GID staff; \
@@ -46,6 +65,9 @@ RUN mkdir -p /var/www/html/storage/rebrand && \
     mkdir -p /var/www/html/storage/runtime/mutex && \
     mkdir -p /var/www/html/storage/logs
 
+# Installs a parallel processing plugin to improve composer performance,
+# then we run composer install. We can probably remove this into a build container in the future.
+RUN composer global require hirak/prestissimo
 RUN composer install -d /var/www/html/
 
 WORKDIR /var/www/html/
