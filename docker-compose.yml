@@ -26,9 +26,9 @@ services:
       './.docker/apache/.env'
     environment:
       - DOCUMENT_ROOT=/var/www/html/web
-      - SERVER_NAME=www.talleys.test
-      - SERVER_ALIAS=talleys.test
-      - VIRTUAL_HOST=talleys.test
+      - SERVER_NAME=www.example.test
+      - SERVER_ALIAS=example.test
+      - VIRTUAL_HOST=example.test
     depends_on:
       - php
       - database
@@ -51,21 +51,7 @@ services:
     networks:
       - backend
     labels:
-      - db.network.tunnel.hostname=talleys.test
-
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    depends_on :
-       - database
-    networks: 
-      - backend
-    external_links:
-      - db:database
-    ports:
-      - 8181:80
-    environment:
-      MYSQL_USERNAME: root
-      MYSQL_ROOT_PASSWORD: rootpassword
+      - db.network.tunnel.hostname=example.test
 
   composer:
     build: 
