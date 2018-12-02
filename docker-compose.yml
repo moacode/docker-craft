@@ -26,16 +26,18 @@ services:
       './.docker/apache/.env'
     environment:
       - DOCUMENT_ROOT=/var/www/html/web
-      - SERVER_NAME=www.talleys.local
-      - SERVER_ALIAS=talleys.local
+      - SERVER_NAME=www.talleys.test
+      - SERVER_ALIAS=talleys.test
+      - VIRTUAL_HOST=talleys.test
     depends_on:
       - php
       - database
     networks:
       - frontend
       - backend
-    ports:
-      - 80:80
+      - default
+    expose:
+      - 80
     volumes:
       - ./container/web:/var/www/html/web
 
@@ -48,8 +50,8 @@ services:
       - database:/var/lib/mysql
     networks:
       - backend
-    ports:
-      - 3306:3306
+    labels:
+      - db.network.tunnel.hostname=talleys.test
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -97,6 +99,9 @@ services:
     command: "yarn watch"
 
 networks:
+  default:
+    external:
+      name: nginx-proxy
   frontend:
   backend:
 
