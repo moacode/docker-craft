@@ -7,4 +7,4 @@ else
 	&& sed -i '' -e 's@\(GID=\)\([0-9]*\)@\1'$(id -g)'@g' .env
 fi
 
-docker-compose up --build -d
+docker-compose up -d
