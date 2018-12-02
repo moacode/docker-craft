@@ -24,8 +24,12 @@ RUN chown plato:staff /app
 
 USER plato
 
+WORKDIR /app
+
+RUN mkdir -p vendor
+
 # Installs a parallel processing plugin to improve composer performance,
 # then we run composer install. We can probably remove this into a build container in the future.
 RUN composer global require hirak/prestissimo
 
-WORKDIR /app
+CMD ["composer"]
