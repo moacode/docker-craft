@@ -24,10 +24,8 @@ RUN chown plato:staff /app
 
 USER plato
 
-WORKDIR /app
-
-COPY ./container/composer.json ./composer.json
-
 # Installs a parallel processing plugin to improve composer performance,
 # then we run composer install. We can probably remove this into a build container in the future.
-RUN composer global require hirak/prestissimo && composer install -d /app
+RUN composer global require hirak/prestissimo
+
+WORKDIR /app
