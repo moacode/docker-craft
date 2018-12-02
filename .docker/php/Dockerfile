@@ -53,7 +53,7 @@ RUN chown plato:staff /var/www/html/
 
 USER plato
 
-COPY ./container/craft /var/www/html/craft
+COPY ./craft /var/www/html/craft
 
 RUN mkdir -p /var/www/html/storage/rebrand && \
     mkdir -p /var/www/html/storage/runtime/mutex && \
