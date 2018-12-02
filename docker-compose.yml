@@ -96,7 +96,7 @@ services:
       - ./container/web/js:/app/public/js
       - ./container/web/css:/app/public/css
       - ./container/web/scss:/app/public/scss
-    command: "yarn watch"
+    command: sh -c "yarn && yarn watch"
 
 networks:
   default:
