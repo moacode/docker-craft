@@ -26,8 +26,4 @@ USER plato
 
 WORKDIR /app
 
-COPY ./container/package.json ./package.json
-
-RUN yarn
-
 CMD ["node"]
