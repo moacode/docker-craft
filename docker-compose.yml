@@ -2,9 +2,9 @@ version: "3.2"
 
 services:
   php:
-    build: 
+    build:
       context: .
-      dockerfile: './.docker/php/Dockerfile' 
+      dockerfile: './.docker/php/Dockerfile'
       args:
         UID: ${UID}
         GID: ${GID}
@@ -19,7 +19,7 @@ services:
       - vendor:/var/www/html/vendor # Shared with the composer service. Built packages will be mounted here.
 
   webserver:
-    build: 
+    build:
       context: .
       dockerfile: './.docker/apache/Dockerfile'
     env_file:
@@ -49,36 +49,22 @@ services:
       - db.network.tunnel.hostname=mysite.test
 
   composer:
-    build: 
+    build:
       context: .
       dockerfile: './.docker/composer/Dockerfile'
-      args:
-        UID: ${UID}
-        GID: ${GID}
     volumes:
-      - ./composer.json:/app/composer.json # Mount the hosts composer JSON file in this container.
-      - ./composer.lock:/app/composer.lock
       - vendor:/app/vendor # Named VOLUME shared with the php service for installed composer packages.
+      - ./:/app
     command: "composer install"
 
   node:
-    build: 
-      context: .
-      dockerfile: './.docker/node/Dockerfile'
-      args:
-        UID: ${UID}
-        GID: ${GID}
+    image: node:8-alpine
+    working_dir: /app
     volumes:
-      - npm-cache:/home/plato/.npm
-      - ./package.json:/app/package.json
-      - ./yarn.lock:/app/yarn.lock
-      - ./mix-manifest.json:/app/mix-manifest.json
-      - ./public/mix-manifest.json:/app/public/mix-manifest.json
-      - ./webpack.mix.js:/app/webpack.mix.js
-      - ./public/js:/app/public/js
-      - ./public/css:/app/public/css
-      - ./public/scss:/app/public/scss
-    command: yarn install-dev
+      - npm-cache:/root/.npm
+      - /app/node_modules
+      - ./:/app
+    command: yarn
 
 networks:
   default:
